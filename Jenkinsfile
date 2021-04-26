@@ -44,13 +44,16 @@ node("build-server"){
         }
 
     }
+}
 
-    def mvnHome
+
+node("test-server"){
+    
     dir('FunctionalTests'){
 
         stage('Get Functional Test Scripts'){                        
             git 'https://github.com/devopsevd/jenkins-selenium-int-testing.git'
-            mvnHome = tool 'Maven'
+            
         }
 
         stage('Run Tests') {
