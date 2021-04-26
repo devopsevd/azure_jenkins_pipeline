@@ -44,18 +44,7 @@ node("build-server"){
         }
 
     }
-}
 
-stage name:'Deploy to staging', concurrency:1
-    node {
-                //sh 'sudo docker run -d -p=3000:80 --network=bundlev2_prodnetwork nginx'
-        dir('BuildQuality'){
-        sh 'sudo docker-compose up -d --build'
-    }
-                
-}
-
-node{
     def mvnHome
     dir('FunctionalTests'){
 
