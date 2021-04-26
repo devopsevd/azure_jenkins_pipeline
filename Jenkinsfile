@@ -1,4 +1,4 @@
-node{
+node("build-server"){
 
     checkout scm
     def mvnHome
@@ -13,9 +13,7 @@ node{
             // Run the maven build
             if (isUnix()) {
                 sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
-            } else {
-                bat(/"${mvnHome}\bin\mvn" -Dmaven.test.failure.ignore clean package/)
-            }
+            } 
         }
         
         stage('SonarQube Analysis') { 
@@ -33,15 +31,16 @@ node{
                     " -Dsonar.tests=. " +
                     " -Dsonar.test.inclusions='**/*Test*/**' " +
                     " -Dsonar.exclusions='**/*Test*/**' "
-                } else {
-                    bat (/"${mvnHome}\bin\mvn" org.sonarsource.scanner.maven:sonar-maven-plugin:3.3.0.603:sonar -f pom.xml -Dsonar.projectKey=org.sonarqube:java-sonar -Dsonar.projectName="Java :: Simple Spring Project" /)
-                }    
+                }     
             }        
         }
 
         stage('Unit Test Results') {
             junit '**/target/surefire-reports/TEST-*.xml'
-            //archive 'target/*.jar'
+        }
+        
+        stage('Package') {
+            sh 'sudo docker-compose --build'
         }
 
     }
