@@ -55,25 +55,40 @@ node("build-server"){
     }
 }
 
+node("test-server"){
+    stage('Deploy to Test Env'){
+          withCredentials([usernamePassword(
+                       credentialsId: 'acr',
+                       passwordVariable: 'PASSWORD',
+                       usernameVariable: 'USER')]) {
+                 
+              sh "sudo docker login -u '$USER' -p '$PASSWORD' '$ACR_SERVER'"
+           }
+        sh "sudo docker run -p 3000:3000 -p 10000:10000 '$ACR_SERVER'/simple-spring-app"
+        
+    }
+}
 
-//node("test-server"){
+
+node("build-server"){
     
-//    dir('FunctionalTests'){
-
-//        stage('Get Functional Test Scripts'){                        
-//            git 'https://github.com/devopsevd/jenkins-selenium-int-testing.git'
+    dir('FunctionalTests'){
+        
+        stage('Get Functional Test Scripts'){      
             
-//        }
+            git 'https://github.com/devopsevd/azure-jenkins-selenium-testscript.git'
+            
+        }
+        stage('Run Tests') {
+            
+            sh "'${mvnHome}/bin/mvn' -Dgrid.server.url=http://10.1.1.4:4444/wd/hub clean test "
+        }
+        stage('Functional Test Results') {
+            junit '**/target/surefire-reports/TEST-*.xml'
+        }
+    }
 
-//        stage('Run Tests') {
-//            sh "'${mvnHome}/bin/mvn' -Dgrid.server.url=http://seleniumhub:4444/wd/hub clean test "
- //       }
-//        stage('Functional Test Results') {
-//            junit '**/target/surefire-reports/TEST-*.xml'
-//        }
-//    }
-
-//}
+}
 
 //stage name:'Shutdown staging'
 //    node {
