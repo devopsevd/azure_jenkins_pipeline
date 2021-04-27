@@ -5,7 +5,7 @@ node("build-server"){
     dir('BuildQuality'){
         stage('Preparation'){
                         
-            git 'https://github.com/devopsevd/simple-spring.git'
+            git 'https://github.com/devopsevd/simple-spring-azure.git'
             mvnHome = tool 'Maven'
         }
 
@@ -40,7 +40,16 @@ node("build-server"){
         }
         
         stage('Package') {
-            //sh 'sudo docker-compose --build'
+             withCredentials([usernamePassword(
+                                credentialsId: 'acr',
+                                passwordVariable: 'PASSWORD',
+                                    usernameVariable: 'USER')]) {
+                 
+                                sh "sudo docker login -u '$USER' -p '$PASSWORD' '$ACR_SERVER'"
+                        }
+            sh 'sudo docker-compose --build'
+            sh "sudo docker tag simple-spring-app '$ACR_SERVER'/simple-spring-app"
+            sh "sudo docker push '$ACR_SERVER'/simple-spring-app"
         }
 
     }
