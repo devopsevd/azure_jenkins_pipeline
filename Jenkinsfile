@@ -64,7 +64,10 @@ node("test-server"){
                  
               sh "sudo docker login -u '$USER' -p '$PASSWORD' '$ACR_SERVER'"
            }
-        sh "sudo docker run -p 3000:3000 -p 10000:10000 '$ACR_SERVER'/simple-spring-app"
+        sh "sudo docker ps -q --filter ancestor='$ACR_SERVER'/simple-spring-app | xargs -r docker stop"
+        sh "sudo docker ps -a -q --filter ancestor='$ACR_SERVER'/simple-spring-app | xargs -r sudo docker rm"
+        //sh "sudo docker rmi '$ACR_SERVER'/simple-spring-app"
+        sh "sudo docker run -d -p 3000:3000 -p 10000:10000 '$ACR_SERVER'/simple-spring-app"
         
     }
 }
