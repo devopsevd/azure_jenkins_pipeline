@@ -71,13 +71,13 @@ node("test-server"){
 
 
 node("build-server"){
-    
+    def mvnHome
     dir('FunctionalTests'){
         
         stage('Get Functional Test Scripts'){      
             
             git 'https://github.com/devopsevd/azure-jenkins-selenium-testscript.git'
-            
+            mvnHome = tool 'Maven'
         }
         stage('Run Tests') {
             
