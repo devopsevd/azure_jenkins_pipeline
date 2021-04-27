@@ -47,7 +47,7 @@ node("build-server"){
                  
                                 sh "sudo docker login -u '$USER' -p '$PASSWORD' '$ACR_SERVER'"
                         }
-            sh 'sudo docker-compose --build'
+            sh 'sudo docker-compose build'
             sh "sudo docker tag simple-spring-app '$ACR_SERVER'/simple-spring-app"
             sh "sudo docker push '$ACR_SERVER'/simple-spring-app"
         }
