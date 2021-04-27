@@ -40,39 +40,39 @@ node("build-server"){
         }
         
         stage('Package') {
-            sh 'sudo docker-compose --build'
+            //sh 'sudo docker-compose --build'
         }
 
     }
 }
 
 
-node("test-server"){
+//node("test-server"){
     
-    dir('FunctionalTests'){
+//    dir('FunctionalTests'){
 
-        stage('Get Functional Test Scripts'){                        
-            git 'https://github.com/devopsevd/jenkins-selenium-int-testing.git'
+//        stage('Get Functional Test Scripts'){                        
+//            git 'https://github.com/devopsevd/jenkins-selenium-int-testing.git'
             
-        }
+//        }
 
-        stage('Run Tests') {
-            sh "'${mvnHome}/bin/mvn' -Dgrid.server.url=http://seleniumhub:4444/wd/hub clean test "
-        }
-        stage('Functional Test Results') {
-            junit '**/target/surefire-reports/TEST-*.xml'
-        }
-    }
+//        stage('Run Tests') {
+//            sh "'${mvnHome}/bin/mvn' -Dgrid.server.url=http://seleniumhub:4444/wd/hub clean test "
+ //       }
+//        stage('Functional Test Results') {
+//            junit '**/target/surefire-reports/TEST-*.xml'
+//        }
+//    }
 
-}
+//}
 
-stage name:'Shutdown staging'
-    node {
+//stage name:'Shutdown staging'
+//    node {
                 
-        dir('BuildQuality'){
-        sh 'sudo docker-compose stop'
-    }
+//        dir('BuildQuality'){
+//        sh 'sudo docker-compose stop'
+//    }
                 
-}
+//}
         
 
