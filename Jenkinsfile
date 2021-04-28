@@ -128,5 +128,22 @@ node("build-server"){
     }
 }
 
+node("prod-server"){
+    stage('Deploy to Stage Env'){
+          withCredentials([usernamePassword(
+                       credentialsId: 'acr',
+                       passwordVariable: 'PASSWORD',
+                       usernameVariable: 'USER')]) {
+                 
+              sh "sudo docker login -u '$USER' -p '$PASSWORD' '$ACR_SERVER'"
+           }
+        sh "sudo docker ps -q --filter ancestor='$ACR_SERVER'/simple-spring-app | xargs -r sudo docker stop"
+        sh "sudo docker ps -a -q --filter ancestor='$ACR_SERVER'/simple-spring-app | xargs -r sudo docker rm"
+        //sh "sudo docker rmi '$ACR_SERVER'/simple-spring-app"
+        sh "sudo docker run -d -p 3000:3000 -p 10000:10000 '$ACR_SERVER'/simple-spring-app"
+        
+    }
+}
+
  
 
