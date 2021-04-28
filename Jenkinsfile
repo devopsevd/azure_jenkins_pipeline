@@ -129,7 +129,7 @@ node("build-server"){
 }
 
 node("prod-server"){
-    stage('Deploy to Stage Env'){
+    stage('Deploy to Prod Env'){
           withCredentials([usernamePassword(
                        credentialsId: 'acr',
                        passwordVariable: 'PASSWORD',
