@@ -122,7 +122,7 @@ node("build-server"){
     dir('Security Test'){        
         stage('Security tests'){                  
             git 'https://github.com/devopsevd/terraform-zap-azure.git'
-            sh "sudo docker run --rm -t owasp/zap2docker-stable zap-baseline.py -t http://10.1.0.6:10000/ -c config"
+            sh "sudo docker run --rm -t owasp/zap2docker-stable zap-baseline.py -t http://10.1.0.6:10000/ -u https://raw.githubusercontent.com/devopsevd/terraform-zap-azure/master/config"
                      
         }
     }
