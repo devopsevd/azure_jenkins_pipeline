@@ -86,20 +86,37 @@ node("build-server"){
             
             sh "'${mvnHome}/bin/mvn' -Dgrid.server.url=http://10.1.1.4:4444/wd/hub clean test "
         }
-        stage('Functional Test Results') {
-            junit '**/target/surefire-reports/TEST-*.xml'
-        }
+
     }
 
 }
 
-//stage name:'Shutdown staging'
-//    node {
-                
-//        dir('BuildQuality'){
-//        sh 'sudo docker-compose stop'
-//    }
-                
-//}
+node("stage-server"){
+    stage('Deploy to Stage Env'){
+          withCredentials([usernamePassword(
+                       credentialsId: 'acr',
+                       passwordVariable: 'PASSWORD',
+                       usernameVariable: 'USER')]) {
+                 
+              sh "sudo docker login -u '$USER' -p '$PASSWORD' '$ACR_SERVER'"
+           }
+        sh "sudo docker ps -q --filter ancestor='$ACR_SERVER'/simple-spring-app | xargs -r sudo docker stop"
+        sh "sudo docker ps -a -q --filter ancestor='$ACR_SERVER'/simple-spring-app | xargs -r sudo docker rm"
+        //sh "sudo docker rmi '$ACR_SERVER'/simple-spring-app"
+        sh "sudo docker run -d -p 3000:3000 -p 10000:10000 '$ACR_SERVER'/simple-spring-app"
         
+    }
+}
+
+node("build-server"){
+    dir('Performance Test'){        
+        stage('Performance tests'){                  
+            git 'https://github.com/devopsevd/terraform-jmeter-azure.git'
+            sh "./exec-jmeter.sh 3"
+            perfReport compareBuildPrevious: true, percentiles: '0,50,90,100', sourceDataFiles: '**/results/**/results'           
+        }
+    }
+}
+
+ 
 
